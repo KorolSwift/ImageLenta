@@ -29,21 +29,26 @@ class ImagesListViewController: UIViewController {
 extension ImagesListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {}
     
-    func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
         guard let image = UIImage(named: photosName[indexPath.row]) else { return }
         
-        cell.cellImage.image = image
-        cell.date.text = dateFormatter.string(from: Date())
+        let date = dateFormatter.string(from: Date())
         
-        let heartImage = indexPath.row % 2 == 0 ? UIImage(named: "unliked") : UIImage(named: "liked")
-        
+        let isLiked = indexPath.row % 2 == 0
+        let model = ImagesListCell.Model(
+            image: image,
+            date: date,
+            isLiked: isLiked)
+        cell.configure(with: model)
+        let heartImage = isLiked ? UIImage(named: "unliked") : UIImage(named: "liked")
         cell.likeButton.setImage(heartImage, for: .normal)
+        cell.likeButton.setTitle("", for: .normal)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else { return 0 }
         
-        let imageBorders = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 16)
+        let imageBorders = UIEdgeInsets(top: 4, left: 16, bottom: 4, right: 16)
         let imageViewWidth = tableView.bounds.width - imageBorders.left - imageBorders.right
         let imageWidth = image.size.width
         let imageDifference = imageViewWidth / imageWidth
