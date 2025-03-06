@@ -8,7 +8,7 @@
 import UIKit
 
 
-class ImagesListCell: UITableViewCell {
+final class ImagesListCell: UITableViewCell {
     
     struct Model {
         let image: UIImage?
