@@ -10,69 +10,73 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
     private var labels: [UILabel] = []
-    private var imageView: UIImageView!
+    private let imageView: UIImageView = {
+        let view = UIImageView()
+        let image = UIImage(named: "Photo")
+        view.image = image
+        return view
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let image = UIImage(named: "Photo")
-        self.imageView = UIImageView(image: image)
-        view.addSubview(imageView)
-        imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.widthAnchor.constraint(equalToConstant: 70).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 70).isActive = true
-        imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32).isActive = true
-        imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16).isActive = true
         imageView.tintColor = .ypWhite
         
         let nameLabel = UILabel()
         nameLabel.text = "Екатерина Новикова"
         nameLabel.textColor = .ypWhite
-        view.addSubview(nameLabel)
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8).isActive = true
-        nameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor).isActive = true
         nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
         
         let nicKLabel = UILabel()
         nicKLabel.text = "@ekaterina_nov"
         nicKLabel.textColor = .ypGray
-        view.addSubview(nicKLabel)
-        nicKLabel.translatesAutoresizingMaskIntoConstraints = false
-        nicKLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8).isActive = true
-        nicKLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor).isActive = true
         nicKLabel.font = .systemFont(ofSize: 13, weight: .regular)
         
         let descriptionLabel = UILabel()
         descriptionLabel.text = "Hello, world!"
         descriptionLabel.textColor = .ypWhite
-        view.addSubview(descriptionLabel)
-        descriptionLabel.translatesAutoresizingMaskIntoConstraints = false
-        descriptionLabel.topAnchor.constraint(equalTo: nicKLabel.bottomAnchor, constant: 8).isActive = true
-        descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor).isActive = true
         descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
         
         let exitButton = UIButton.systemButton(
-            with: UIImage(named: "Exit")!,
+            with: UIImage(named: "Exit") ?? UIImage(),
             target: self,
             action: #selector(Self.didTapButton)
         )
         exitButton.tintColor = .ypRed
-        view.addSubview(exitButton)
-        exitButton.translatesAutoresizingMaskIntoConstraints = false
-        exitButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor).isActive = true
-        exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16).isActive = true
-        exitButton.widthAnchor.constraint(equalToConstant: 44).isActive = true
-        exitButton.heightAnchor.constraint(equalToConstant: 44).isActive = true
         
+        [imageView,
+         nameLabel,
+         nicKLabel,
+         descriptionLabel,
+         exitButton].forEach {
+            $0.translatesAutoresizingMaskIntoConstraints = false
+            view.addSubview($0)
+        }
+        
+        NSLayoutConstraint.activate([
+            imageView.widthAnchor.constraint(equalToConstant: 70),
+            imageView.heightAnchor.constraint(equalToConstant: 70),
+            imageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 32),
+            imageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            
+            nameLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 8),
+            nameLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            
+            nicKLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 8),
+            nicKLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            
+            descriptionLabel.topAnchor.constraint(equalTo: nicKLabel.bottomAnchor, constant: 8),
+            descriptionLabel.leadingAnchor.constraint(equalTo: imageView.leadingAnchor),
+            
+            exitButton.centerYAnchor.constraint(equalTo: imageView.centerYAnchor),
+            exitButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            exitButton.widthAnchor.constraint(equalToConstant: 44),
+            exitButton.heightAnchor.constraint(equalToConstant: 44)
+        ])
     }
+    
     @objc
     private func didTapButton() {
-        for view in view.subviews {
-            if view is UILabel {
-                view.removeFromSuperview()
-            }
-        }
-        imageView.image = UIImage(systemName: "person.crop.circle.fill")
+        // TODO: Добавить обработчик нажатия кнопки логаута
     }
 }

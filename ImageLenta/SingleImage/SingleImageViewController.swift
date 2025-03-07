@@ -10,22 +10,17 @@ import UIKit
 
 final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
     
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
-    }
+    @IBOutlet private var imageView: UIImageView!
+    @IBOutlet weak var scrollView: UIScrollView!
+    
     var image: UIImage? {
         didSet {
-            guard isViewLoaded else { return }
-            guard let image else { return }
+            guard isViewLoaded, let image else { return }
             imageView.image = image
             imageView.frame.size = image.size
             rescaleAndCenterImageInScrollView(image: image)
         }
     }
-    
-    @IBOutlet private var imageView: UIImageView!
-    
-    @IBOutlet weak var scrollView: UIScrollView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,13 +38,21 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func tapSharingButton() {
+    @IBAction private func tapSharingButton() {
         guard let image else { return }
         let sharing = UIActivityViewController(
             activityItems: [image],
             applicationActivities: nil
         )
         present(sharing, animated: true, completion: nil)
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return imageView
+    }
+    
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        centerContent()
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {
@@ -68,10 +71,6 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         let x = (newContentSize.width - visibleRectSize.width) / 2
         let y = (newContentSize.height - visibleRectSize.height) / 2
         scrollView.setContentOffset(CGPoint(x: x, y: y), animated: false)
-        centerContent()
-    }
-    
-    func scrollViewDidZoom(_ scrollView: UIScrollView) {
         centerContent()
     }
     

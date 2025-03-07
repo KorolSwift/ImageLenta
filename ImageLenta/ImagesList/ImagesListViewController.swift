@@ -32,7 +32,7 @@ final class ImagesListViewController: UIViewController {
                 let viewController = segue.destination as? SingleImageViewController,
                 let indexPath = sender as? IndexPath
             else {
-                assertionFailure("Invalid segue destination")
+                print("Invalid segue destination")
                 return
             }
             
@@ -50,22 +50,6 @@ extension ImagesListViewController: UITableViewDelegate {
         performSegue(withIdentifier: showSingleImageSegueIdentifier, sender: indexPath)
     }
     
-    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
-        guard let image = UIImage(named: photosName[indexPath.row]) else { return }
-        
-        let date = dateFormatter.string(from: Date())
-        
-        let isLiked = indexPath.row % 2 == 0
-        let model = ImagesListCell.Model(
-            image: image,
-            date: date,
-            isLiked: isLiked)
-        cell.configure(with: model)
-        let heartImage = isLiked ? UIImage(named: "unliked") : UIImage(named: "liked")
-        cell.likeButton.setImage(heartImage, for: .normal)
-        cell.likeButton.setTitle("", for: .normal)
-    }
-    
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard let image = UIImage(named: photosName[indexPath.row]) else { return 0 }
         
@@ -77,6 +61,22 @@ extension ImagesListViewController: UITableViewDelegate {
         let imageHeight = imageViewHeight + imageBorders.bottom + imageBorders.top
         
         return imageHeight
+    }
+    
+    private func configCell(for cell: ImagesListCell, with indexPath: IndexPath) {
+        guard let image = UIImage(named: photosName[indexPath.row]) else { return }
+        
+        let date = dateFormatter.string(from: Date())
+        
+        let isLiked = indexPath.row % 2 == 0
+        let model = ListCellModel(
+            image: image,
+            date: date,
+            isLiked: isLiked)
+        cell.configure(with: model)
+        let heartImage = isLiked ? UIImage(named: "liked") : UIImage(named: "unliked")
+        cell.likeButton.setImage(heartImage, for: .normal)
+        cell.likeButton.setTitle("", for: .normal)
     }
 }
 
