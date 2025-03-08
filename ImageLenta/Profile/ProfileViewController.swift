@@ -9,40 +9,51 @@ import UIKit
 
 
 final class ProfileViewController: UIViewController {
-    private var labels: [UILabel] = []
+    
     private let imageView: UIImageView = {
         let view = UIImageView()
         let image = UIImage(named: "Photo")
         view.image = image
+        view.tintColor = .ypWhite
         return view
     }()
     
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        imageView.tintColor = .ypWhite
-        
-        let nameLabel = UILabel()
-        nameLabel.text = "Екатерина Новикова"
-        nameLabel.textColor = .ypWhite
-        nameLabel.font = .systemFont(ofSize: 23, weight: .bold)
-        
-        let nicKLabel = UILabel()
-        nicKLabel.text = "@ekaterina_nov"
-        nicKLabel.textColor = .ypGray
-        nicKLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        
-        let descriptionLabel = UILabel()
-        descriptionLabel.text = "Hello, world!"
-        descriptionLabel.textColor = .ypWhite
-        descriptionLabel.font = .systemFont(ofSize: 13, weight: .regular)
-        
-        let exitButton = UIButton.systemButton(
+    private let nameLabel: UILabel = {
+        let label = UILabel ()
+        label.text = "Екатерина Новикова"
+        label.textColor = .ypWhite
+        label.font = .systemFont(ofSize: 23, weight: .bold)
+        return label
+    }()
+    
+    private let nicKLabel: UILabel = {
+        let label = UILabel()
+        label.text = "@ekaterina_nov"
+        label.textColor = .ypGray
+        label.font = .systemFont(ofSize: 13, weight: .regular)
+        return label
+    }()
+    
+    private let descriptionLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Hello, world!"
+        label.textColor = .ypWhite
+        label.font = .systemFont(ofSize: 13, weight: .regular)
+        return label
+    }()
+    
+    private lazy var exitButton: UIButton = {
+        let button = UIButton.systemButton(
             with: UIImage(named: "Exit") ?? UIImage(),
             target: self,
             action: #selector(Self.didTapButton)
         )
-        exitButton.tintColor = .ypRed
+        button.tintColor = .ypRed
+        return button
+    }()
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
         [imageView,
          nameLabel,
