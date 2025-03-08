@@ -8,14 +8,8 @@
 import UIKit
 
 
-class ImagesListCell: UITableViewCell {
-    
-    struct Model {
-        let image: UIImage?
-        let date: String
-        let isLiked: Bool
-    }
-    
+final class ImagesListCell: UITableViewCell {
+
     @IBOutlet weak var cellImage: UIImageView!
     @IBOutlet weak var date: UILabel!
     @IBOutlet weak var likeButton: UIButton!
@@ -23,8 +17,8 @@ class ImagesListCell: UITableViewCell {
     static let reuseIdentifier = "ImagesListCell"
     
     @IBAction func tapButton(_ sender: Any) {}
-    
-    func configure(with model: Model) {
+     
+    func configure(with model: ListCellModel) {
         cellImage.image = model.image
         date.text = model.date
         likeButton.isSelected = model.isLiked
