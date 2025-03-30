@@ -16,7 +16,7 @@ final class SplashViewController: UIViewController {
         super.viewDidAppear(animated)
         print("SplashViewController: token =", storage.token as Any)
         
-        if let token = storage.token {
+        if storage.token != nil {
             switchToTabBarController()
             
         } else {

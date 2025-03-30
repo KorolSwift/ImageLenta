@@ -13,7 +13,7 @@ final class OAuth2Service {
     private init() {}
     weak var delegate: AuthViewControllerDelegate?
     
-    func createUrlRequest(code: String) -> URLRequest {
+    private func createUrlRequest(code: String) -> URLRequest {
         guard let url = URL(string: "https://unsplash.com/oauth/token") else {
             fatalError("Неверный URL")
         }
@@ -64,8 +64,9 @@ final class OAuth2Service {
             do {
                 let decoder = JSONDecoder()
                 let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                OAuth2TokenStorage().token = response.accessToken
+                
                 DispatchQueue.main.async {
+                    OAuth2TokenStorage().token = response.accessToken
                     completion(.success(response.accessToken))
                 }
                 

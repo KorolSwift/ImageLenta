@@ -25,7 +25,7 @@ final class WebViewViewController: UIViewController {
         loadAuthView()
     }
     
-    @IBAction func tapBlackBackWard() {
+    @IBAction private func tapBlackBackWard() {
         navigationController?.popViewController(animated: true)
     }
     
@@ -89,13 +89,13 @@ extension WebViewViewController: WKNavigationDelegate {
     ) {
         if let code = code(from: navigationAction) {
             print("✅ CODE FROM URL:", code)
-
+            
             delegate?.webViewViewController(self, didAuthenticateWithCode: code)
             decisionHandler(.cancel)
             return
         }
         
-      
+        
         
         
         decisionHandler(.allow)
