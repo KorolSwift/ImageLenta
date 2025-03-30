@@ -19,6 +19,30 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let _ = (scene as? UIWindowScene) else { return }
     }
 
+    
+    
+//    func scene(_ scene: UIScene,
+//               willConnectTo session: UISceneSession,
+//               options connectionOptions: UIScene.ConnectionOptions) {
+//        
+//        // Убеждаемся, что у нас есть окно
+//        guard let windowScene = (scene as? UIWindowScene) else { return }
+//
+//        // Создаём новое окно
+//        let window = UIWindow(windowScene: windowScene)
+//
+//        // Загружаем storyboard с именем "Main"
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+//
+//        // Создаём экземпляр SplashViewController
+//        let splashViewController = storyboard.instantiateViewController(withIdentifier: "SplashViewController")
+//
+//        // Устанавливаем корневой контроллер
+//        window.rootViewController = splashViewController
+//        self.window = window
+//        window.makeKeyAndVisible()
+//    }
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

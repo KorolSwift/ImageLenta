@@ -34,7 +34,7 @@ final class SingleImageViewController: UIViewController, UIScrollViewDelegate {
         scrollView.delegate = self
     }
     
-    @IBAction private func tapBackWard() {
+    @IBAction private func tapWhiteBackWard() {
         dismiss(animated: true, completion: nil)
     }
     
