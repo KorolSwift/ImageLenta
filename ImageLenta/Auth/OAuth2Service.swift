@@ -69,12 +69,12 @@ final class OAuth2Service {
                     
                 case .failure(let error):
                     print("[OAuth2Service:fetchOAuthToken]: Ошибка - \(error.localizedDescription), code: \(code)")
-
+                    
                     completion(.failure(error))
                 }
             }
         }
         self.task = task
         task.resume()
-    }}
-                           
+    }
+}

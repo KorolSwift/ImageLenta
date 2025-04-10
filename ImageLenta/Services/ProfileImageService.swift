@@ -24,7 +24,6 @@ final class ProfileImageService {
         }
     }
     
-    
     struct ProfileImage: Codable {
         let profileImageSmall: String
         
@@ -32,7 +31,7 @@ final class ProfileImageService {
             case profileImageSmall = "small"
         }
     }
-
+    
     func fetchProfileImage(for username: String, token: String, completion: @escaping (Result<String, Error>) -> Void) {
         let url = Constants.defaultBaseURL
             .appendingPathComponent("users")

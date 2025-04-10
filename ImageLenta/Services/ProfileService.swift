@@ -21,7 +21,6 @@ final class ProfileService {
         let last_name: String?
         let bio: String?
         
-        
         enum CodingKeys: CodingKey {
             case username
             case first_name
@@ -43,8 +42,6 @@ final class ProfileService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-
-        
         let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             DispatchQueue.main.async {
                 switch result {
@@ -61,7 +58,7 @@ final class ProfileService {
                     
                 case .failure(let error):
                     print("[ProfileService:fetchProfile]: Ошибка - \(error.localizedDescription), token: \(token)")
-
+                    
                     completion(.failure(error))
                 }
             }

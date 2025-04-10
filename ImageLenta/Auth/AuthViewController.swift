@@ -44,7 +44,6 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
-        // CТРОЧКА СНИЗУ ДОБАВЛЕНА ИЗ ПРОЕКТА В УЧЕБНИКЕ !! ПРОВЕРИТЬ ПОТОМ НА СКРЫТИЕ Webview
         vc.dismiss(animated: true)
         UIBlockingProgressHUD.show()
         oauth2Service.fetchOAuthToken(code) { result in
