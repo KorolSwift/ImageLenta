@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ProgressHUD
 
 
 protocol AuthViewControllerDelegate: AnyObject {
@@ -43,11 +44,16 @@ final class AuthViewController: UIViewController {
 
 extension AuthViewController: WebViewViewControllerDelegate {
     func webViewViewController(_ vc: WebViewViewController, didAuthenticateWithCode code: String) {
+        // CТРОЧКА СНИЗУ ДОБАВЛЕНА ИЗ ПРОЕКТА В УЧЕБНИКЕ !! ПРОВЕРИТЬ ПОТОМ НА СКРЫТИЕ Webview
+        vc.dismiss(animated: true)
+        UIBlockingProgressHUD.show()
         oauth2Service.fetchOAuthToken(code) { result in
+            UIBlockingProgressHUD.dismiss()
             switch result {
                 
             case .success(let token):
                 OAuth2TokenStorage().token = token
+                
                 
                 DispatchQueue.main.async {
                     guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
@@ -56,14 +62,20 @@ extension AuthViewController: WebViewViewControllerDelegate {
                         return
                     }
                     
-                    let storyboard = UIStoryboard(name: "Main", bundle: .main)
-                    let tabBarController = storyboard.instantiateViewController(withIdentifier: "TabBarViewController")
-                    
-                    window.rootViewController = tabBarController
+                    window.rootViewController?.dismiss(animated: false, completion: nil)
+                    window.rootViewController?.view.isHidden = true
                     window.makeKeyAndVisible()
                 }
             case .failure(let error):
-                print("Failed to fetch token:", error)
+                DispatchQueue.main.async {
+                    let alert = UIAlertController(
+                        title: "Что-то пошло не так",
+                        message: "Не удалось войти в систему",
+                        preferredStyle: .alert
+                    )
+                    alert.addAction(UIAlertAction(title: "Ок", style: .default))
+                    self.present(alert, animated: true)
+                }
             }
         }
     }
