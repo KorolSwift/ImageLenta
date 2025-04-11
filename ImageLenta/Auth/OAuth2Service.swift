@@ -8,14 +8,58 @@
 import Foundation
 
 
+enum AuthServiceError: Error {
+    case invalidRequest
+}
+
 final class OAuth2Service {
+    
     static let shared = OAuth2Service()
     private init() {}
     weak var delegate: AuthViewControllerDelegate?
     
+    private let urlSession = URLSession.shared
+    private var task: URLSessionTask?
+    private var lastCode: String?
+    
+    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
+        assert(Thread.isMainThread)
+        
+        guard lastCode != code else {
+            completion(.failure(AuthServiceError.invalidRequest))
+            return
+        }
+        task?.cancel()
+        lastCode = code
+        
+        let request = createUrlRequest(code: code)
+        
+        let task = NetworkClient().objectTask(for: request) { [weak self] (result: Result<OAuthTokenResponseBody, Error>) in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.task = nil
+                self.lastCode = nil
+                
+                switch result {
+                case .success(let response):
+                    OAuth2TokenStorage.shared.token = response.accessToken
+                    completion(.success(response.accessToken))
+                    
+                case .failure(let error):
+                    print("[OAuth2Service:fetchOAuthToken]: Ошибка - \(error.localizedDescription), code: \(code)")
+                    
+                    completion(.failure(error))
+                }
+            }
+        }
+        self.task = task
+        task.resume()
+    }
+    
     private func createUrlRequest(code: String) -> URLRequest {
         guard let url = URL(string: "https://unsplash.com/oauth/token") else {
-            fatalError("Неверный URL")
+            assertionFailure("Неверный URL")
+            return URLRequest(url: URL(string: "https://unsplash.com")!)
         }
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -34,47 +78,5 @@ final class OAuth2Service {
         request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         
         return request
-    }
-    
-    func fetchOAuthToken(_ code: String, completion: @escaping (Result<String, Error>) -> Void) {
-        print("fetchOAuthToken called with code: \(code)")
-        let request = createUrlRequest(code: code)
-        URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-                return
-            }
-            guard let httpResponse = response as? HTTPURLResponse, (200..<300).contains(httpResponse.statusCode) else {
-                
-                DispatchQueue.main.async {
-                    completion(.failure(URLError(.badServerResponse)))
-                }
-                return
-            }
-            
-            guard let data = data else {
-                DispatchQueue.main.async {
-                    completion(.failure(URLError(.zeroByteResource)))
-                }
-                return
-            }
-            
-            do {
-                let decoder = JSONDecoder()
-                let response = try decoder.decode(OAuthTokenResponseBody.self, from: data)
-                
-                DispatchQueue.main.async {
-                    OAuth2TokenStorage().token = response.accessToken
-                    completion(.success(response.accessToken))
-                }
-                
-            } catch {
-                DispatchQueue.main.async {
-                    completion(.failure(error))
-                }
-            }
-        } .resume()
     }
 }
