@@ -51,7 +51,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
             switch result {
                 
             case .success(let token):
-                OAuth2TokenStorage().token = token
+                OAuth2TokenStorage.shared.token = token
                 
                 
                 DispatchQueue.main.async {
@@ -65,7 +65,7 @@ extension AuthViewController: WebViewViewControllerDelegate {
                     window.rootViewController?.view.isHidden = true
                     window.makeKeyAndVisible()
                 }
-            case .failure(let error):
+            case .failure:
                 DispatchQueue.main.async {
                     let alert = UIAlertController(
                         title: "Что-то пошло не так",

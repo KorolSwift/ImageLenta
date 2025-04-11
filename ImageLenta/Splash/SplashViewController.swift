@@ -9,7 +9,7 @@ import UIKit
 
 
 final class SplashViewController: UIViewController {
-    private let storage = OAuth2TokenStorage()
+    private let storage = OAuth2TokenStorage.shared
     private let profileService = ProfileService.shared
     
     private let imageView: UIImageView = {
@@ -38,9 +38,9 @@ final class SplashViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
-        if UserDefaults.standard.bool(forKey: "hasLaunchedBefore") == false {
-            OAuth2TokenStorage().clearToken()
-            UserDefaults.standard.set(true, forKey: "hasLaunchedBefore")
+        if !UserDefaultsService.shared.hasLaunchedBefore {
+            OAuth2TokenStorage.shared.clearToken()
+            UserDefaultsService.shared.hasLaunchedBefore = true
         }
         
         if let token = storage.token {

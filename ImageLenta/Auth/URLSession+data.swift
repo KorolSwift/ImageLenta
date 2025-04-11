@@ -8,40 +8,16 @@
 import Foundation
 
 
-enum NetworkError: Error {
+private enum NetworkError: Error {
     case httpStatusCode(Int)
     case urlRequestError(Error)
     case urlSessionError
 }
 
-extension URLSession {
-    func objectTask<T: Decodable>(
-        for request: URLRequest,
-        completion: @escaping (Result<T, Error>) -> Void
-    ) -> URLSessionTask {
-        let decoder = JSONDecoder()
-        let client = NetworkClient()
-        return client.data(for: request) { result in
-            switch result {
-            case .success(let data):
-                do {
-                    let model = try decoder.decode(T.self, from: data)
-                    completion(.success(model))
-                } catch {
-                    print("Ошибка декодирования: \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "недоступны")")
-                    print("Ответ сервера: \(String(data: data, encoding: .utf8) ?? "Нет строки")")
-                    completion(.failure(error))
-                }
-            case .failure(let error):
-                completion(.failure(error))
-            }
-        }
-    }
-}
-
 protocol NetworkRouting {
     func fetch(url: URL, handler: @escaping (Result<Data, Error>) -> Void)
     func data(for request: URLRequest, completion: @escaping (Result<Data, Error>) -> Void) -> URLSessionTask
+    func objectTask<T: Decodable>(for request: URLRequest, completion: @escaping (Result<T, Error>) -> Void) -> URLSessionTask
 }
 
 struct NetworkClient: NetworkRouting {
@@ -71,6 +47,26 @@ struct NetworkClient: NetworkRouting {
         }
         task.resume()
         return task
+    }
+    
+    func objectTask<T: Decodable>(for request: URLRequest, completion: @escaping (Result<T, Error>) -> Void) -> URLSessionTask {
+        let decoder = JSONDecoder()
+        
+        return data(for: request) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let model = try decoder.decode(T.self, from: data)
+                    completion(.success(model))
+                } catch {
+                    print("[objectTask]: Ошибка декодирования: \(error.localizedDescription), Данные: \(String(data: data, encoding: .utf8) ?? "недоступны")")
+                    completion(.failure(error))
+                }
+            case .failure(let error):
+                print("[objectTask]: Ошибка сети: \(error.localizedDescription)")
+                completion(.failure(error))
+            }
+        }
     }
 }
 

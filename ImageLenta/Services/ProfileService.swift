@@ -17,14 +17,14 @@ final class ProfileService {
     
     struct ProfileResult: Codable {
         let username: String
-        let first_name: String
-        let last_name: String?
+        let firstName: String
+        let lastName: String?
         let bio: String?
         
-        enum CodingKeys: CodingKey {
+        enum CodingKeys: String, CodingKey {
             case username
-            case first_name
-            case last_name
+            case firstName = "first_name"
+            case lastName = "last_name"
             case bio
         }
     }
@@ -42,13 +42,13 @@ final class ProfileService {
         request.httpMethod = "GET"
         request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
         
-        let task = urlSession.objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
+        let task = NetworkClient().objectTask(for: request) { [weak self] (result: Result<ProfileResult, Error>) in
             DispatchQueue.main.async {
                 switch result {
                 case .success(let decodedProfileResult):
                     let profile = Profile(
                         username: decodedProfileResult.username,
-                        name: "\(decodedProfileResult.first_name) \(decodedProfileResult.last_name ?? "")",
+                        name: "\(decodedProfileResult.firstName) \(decodedProfileResult.lastName ?? "")",
                         loginName: "@\(decodedProfileResult.username)",
                         bio: decodedProfileResult.bio
                     )

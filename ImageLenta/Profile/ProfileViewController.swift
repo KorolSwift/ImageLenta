@@ -8,14 +8,21 @@
 import UIKit
 import Kingfisher
 
+extension UIImage {
+    static var noPhoto: UIImage {
+        UIImage(named: "PhotoNoName") ?? UIImage()
+    }
+    static var launchScreenLogo: UIImage {
+        UIImage(named: "LaunchScreen") ?? UIImage()
+    }
+}
 
 final class ProfileViewController: UIViewController {
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private let imageView: UIImageView = {
         let view = UIImageView()
-        let image = UIImage(named: "PhotoNoName")
-        view.image = image
+        view.image = .noPhoto
         view.clipsToBounds = true
         view.layer.cornerRadius = 35
         return view
@@ -113,15 +120,14 @@ final class ProfileViewController: UIViewController {
             let profileImageURL = ProfileImageService.shared.avatarURL,
             let url = URL(string: profileImageURL)
         else {
-            imageView.image = UIImage(named: "PhotoNoName")
+            imageView.image = .noPhoto
             return }
         
         if url.absoluteString.contains("placeholder-avatars/") {
-            imageView.image = UIImage(named: "PhotoNoName")
+            imageView.image = .noPhoto
             return
         }
-        
-        imageView.kf.setImage(with: url, placeholder: UIImage(named: "PhotoNoName"), options: [.cacheOriginalImage])
+        imageView.kf.setImage(with: url, placeholder: UIImage.noPhoto, options: [.cacheOriginalImage])
     }
     
     private func updateProfileDetails(profile: ProfileService.Profile) {
