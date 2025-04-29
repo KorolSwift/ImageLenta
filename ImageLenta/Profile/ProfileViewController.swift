@@ -53,7 +53,7 @@ final class ProfileViewController: UIViewController {
         let button = UIButton.systemButton(
             with: UIImage(named: "Exit") ?? UIImage(),
             target: self,
-            action: #selector(self.didTapButton)
+            action: #selector(self.didTapLogout)
         )
         button.tintColor = .ypRed
         return button
@@ -61,7 +61,6 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         view.backgroundColor = .ypBlack
         
         [imageView,
@@ -137,7 +136,29 @@ final class ProfileViewController: UIViewController {
     }
     
     @objc
-    private func didTapButton() {
-        // TODO: Добавить обработчик нажатия кнопки логаута
+    private func didTapLogout() {
+        let alert = UIAlertController(
+            title: "Пока, пока!",
+            message: "Уверены, что хотите выйти?",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(
+            title: "Да",
+            style: .default
+        ) { _ in
+            ProfileLogoutService.shared.logout()
+            guard let window = UIApplication.shared.windows.first else { return }
+            let splash = SplashViewController()
+            window.rootViewController = splash
+            window.makeKeyAndVisible()
+        })
+        
+        alert.addAction(UIAlertAction(
+            title: "Нет",
+            style: .default,
+            handler: nil
+        ))
+        self.present(alert, animated: true, completion: nil)
     }
 }
