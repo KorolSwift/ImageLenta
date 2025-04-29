@@ -60,11 +60,14 @@ final class ProfileImageService {
                 case .failure(let error):
                     print("[ProfileImageService:fetchProfileImage]: Ошибка - \(error.localizedDescription), username: \(username)")
                     completion(.failure(error))
-                    
                 }
             }
         }
         task.resume()
+    }
+    
+    func cleanAvatar() {
+        avatarURL = nil
     }
 }
 

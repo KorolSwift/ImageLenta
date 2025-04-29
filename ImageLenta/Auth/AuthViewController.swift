@@ -53,14 +53,12 @@ extension AuthViewController: WebViewViewControllerDelegate {
             case .success(let token):
                 OAuth2TokenStorage.shared.token = token
                 
-                
                 DispatchQueue.main.async {
                     guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
                           let window = windowScene.windows.first else {
                         assertionFailure("No active window")
                         return
                     }
-                    
                     window.rootViewController?.dismiss(animated: false, completion: nil)
                     window.rootViewController?.view.isHidden = true
                     window.makeKeyAndVisible()
@@ -83,3 +81,4 @@ extension AuthViewController: WebViewViewControllerDelegate {
         dismiss(animated: true)
     }
 }
+

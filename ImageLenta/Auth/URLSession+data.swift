@@ -42,7 +42,6 @@ struct NetworkClient: NetworkRouting {
                 return
             }
             guard let data = data else { return }
-            print("Ошибка: нет данных")
             completion(.success(data))
         }
         task.resume()
@@ -51,6 +50,7 @@ struct NetworkClient: NetworkRouting {
     
     func objectTask<T: Decodable>(for request: URLRequest, completion: @escaping (Result<T, Error>) -> Void) -> URLSessionTask {
         let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .iso8601
         
         return data(for: request) { result in
             switch result {
@@ -69,4 +69,3 @@ struct NetworkClient: NetworkRouting {
         }
     }
 }
-

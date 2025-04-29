@@ -28,6 +28,3 @@ final class OAuth2TokenStorage {
         KeychainWrapper.standard.removeObject(forKey: tokenKey)
     }
 }
-
-
-
