@@ -9,7 +9,7 @@ import UIKit
 
 
 struct ListCellModel {
-    let image: UIImage?
-    let date: String
+    let imageURL: String
+    let date: Date?
     let isLiked: Bool
 }
