@@ -8,6 +8,14 @@
 import UIKit
 import Kingfisher
 
+
+public protocol ProfileViewControllerProtocol: AnyObject {
+    var presenter: ProfileViewPresenterProtocol? { get set }
+    func setProfileInfo(name: String, username: String, description: String)
+    func setAvatar(url: URL)
+    func showLogoutAlert()
+}
+
 extension UIImage {
     static var noPhoto: UIImage {
         UIImage(named: "PhotoNoName") ?? UIImage()
@@ -17,7 +25,13 @@ extension UIImage {
     }
 }
 
-final class ProfileViewController: UIViewController {
+final class ProfileViewController: UIViewController & ProfileViewControllerProtocol {
+    var presenter: (any ProfileViewPresenterProtocol)? {
+        didSet {
+            presenter?.view = self
+        }
+    }
+    
     private var profileImageServiceObserver: NSObjectProtocol?
     
     private let imageView: UIImageView = {
@@ -62,6 +76,8 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .ypBlack
+        exitButton.accessibilityIdentifier = "logoutButton"
+        presenter?.viewDidLoad()
         
         [imageView,
          nameLabel,
@@ -92,26 +108,6 @@ final class ProfileViewController: UIViewController {
             exitButton.widthAnchor.constraint(equalToConstant: 44),
             exitButton.heightAnchor.constraint(equalToConstant: 44)
         ])
-        if let profileService = ProfileService.shared.profile {
-            nameLabel.text = profileService.name
-            nicKLabel.text = profileService.loginName
-            descriptionLabel.text = profileService.bio
-        }
-        
-        if let profile = ProfileService.shared.profile {
-            updateProfileDetails(profile: profile)
-        }
-        
-        profileImageServiceObserver = NotificationCenter.default
-            .addObserver(
-                forName: ProfileImageService.didChangeNotification,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                guard let self = self else { return }
-                self.updateAvatar()
-            }
-        updateAvatar()
     }
     
     private func updateAvatar() {
@@ -120,7 +116,8 @@ final class ProfileViewController: UIViewController {
             let url = URL(string: profileImageURL)
         else {
             imageView.image = .noPhoto
-            return }
+            return
+        }
         
         if url.absoluteString.contains("placeholder-avatars/") {
             imageView.image = .noPhoto
@@ -137,6 +134,24 @@ final class ProfileViewController: UIViewController {
     
     @objc
     private func didTapLogout() {
+        presenter?.didTapLogout()
+    }
+    
+    func setProfileInfo(name: String, username: String, description: String) {
+        nameLabel.text = name
+        nicKLabel.text = username
+        descriptionLabel.text = description
+    }
+    
+    func setAvatar(url: URL) {
+        if url.absoluteString.contains("placeholder-avatars/") {
+            imageView.image = .noPhoto
+        } else {
+            imageView.kf.setImage(with: url, placeholder: UIImage.noPhoto)
+        }
+    }
+    
+    func showLogoutAlert() {
         let alert = UIAlertController(
             title: "Пока, пока!",
             message: "Уверены, что хотите выйти?",
@@ -160,5 +175,9 @@ final class ProfileViewController: UIViewController {
             handler: nil
         ))
         self.present(alert, animated: true, completion: nil)
+    }
+    
+    func configure(_ presenter: ProfileViewPresenterProtocol) {
+        self.presenter = presenter
     }
 }

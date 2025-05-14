@@ -13,11 +13,9 @@ enum AuthServiceError: Error {
 }
 
 final class OAuth2Service {
-    
     static let shared = OAuth2Service()
     private init() {}
     weak var delegate: AuthViewControllerDelegate?
-    
     private let urlSession = URLSession.shared
     private var task: URLSessionTask?
     private var lastCode: String?

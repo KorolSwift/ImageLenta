@@ -7,37 +7,103 @@
 
 import XCTest
 
-final class ImageLentaUITests: XCTestCase {
 
+class Image_FeedUITests: XCTestCase {
+    private let app = XCUIApplication()
+    
     override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-
-        // In UI tests it is usually best to stop immediately when a failure occurs.
         continueAfterFailure = false
-
-        // In UI tests it’s important to set the initial state - such as interface orientation - required for your tests before they run. The setUp method is a good place to do this.
-    }
-
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
         app.launch()
-
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    }
+    
+    func testAuth() throws {
+        app.buttons["Authenticate"].tap()
+        
+        let webView = app.webViews["UnsplashWebView"]
+        XCTAssertTrue(webView.waitForExistence(timeout: 5))
+        let loginTextField = webView.descendants(matching: .textField).element
+        XCTAssertTrue(loginTextField.waitForExistence(timeout: 5))
+        loginTextField.tap()
+        loginTextField.typeText("email\t")
+        
+        let passwordTextField = webView.descendants(matching: .secureTextField).element
+        XCTAssertTrue(passwordTextField.waitForExistence(timeout: 5))
+        passwordTextField.tap()
+        
+        let letterKey = app.keyboards.buttons["ABC"]
+        if letterKey.waitForExistence(timeout: 1) {
+            letterKey.tap()
+        }
+        
+        passwordTextField.typeText("password\n")
+        
+        let feedTable = app.tables["ImagesListTable"]
+        XCTAssertTrue(feedTable.waitForExistence(timeout: 10), "Таблица ленты не появилась")
+        let tablesQuery = app.tables
+        let cell = tablesQuery.children(matching: .cell).element(boundBy: 0)
+        
+        XCTAssertTrue(cell.waitForExistence(timeout: 5))
     }
 
-    @MainActor
-    func testLaunchPerformance() throws {
-        if #available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 7.0, *) {
-            // This measures how long it takes to launch your application.
-            measure(metrics: [XCTApplicationLaunchMetric()]) {
-                XCUIApplication().launch()
+    func testFeed() throws {
+        let app = XCUIApplication()
+        let feedTable = app.tables["ImagesListTable"]
+        XCTAssertTrue(feedTable.waitForExistence(timeout: 10), "Лента не загрузилась")
+
+        let сell = feedTable.cells.element(boundBy: 1)
+        var attempts = 0
+        while !сell.exists || !сell.isHittable {
+            feedTable.swipeUp()
+            sleep(1)
+            attempts += 1
+            if attempts > 8 {
+                XCTFail("Не удалось доскроллить до ячейки")
+                return
             }
         }
+
+        let likeButton = сell.buttons["likeButton"]
+        XCTAssertTrue(likeButton.exists, "Кнопка лайка не найдена")
+        likeButton.tap()
+        sleep(1)
+        likeButton.tap()
+        sleep(1)
+
+        сell.tap()
+        sleep(2)
+
+        let image = app.images["FullSizeImage"]
+        XCTAssertTrue(image.waitForExistence(timeout: 10), "Полноэкранное изображение не появилось")
+
+        image.pinch(withScale: 3, velocity: 1)
+        image.pinch(withScale: 0.5, velocity: -1)
+
+        let backButton = app.buttons["nav back button white"]
+        XCTAssertTrue(backButton.exists, "Кнопка назад не найдена")
+        backButton.tap()
+    }
+    
+    func testProfileLogout() throws {
+        let profileTab = app.tabBars.buttons.element(boundBy: 1)
+        XCTAssertTrue(profileTab.waitForExistence(timeout: 5), "Кнопка профиля не найдена")
+        profileTab.tap()
+        
+        let nameLabel = app.staticTexts.element(boundBy: 0)
+        XCTAssertTrue(nameLabel.exists)
+        XCTAssertEqual(nameLabel.label, "Diana ")
+        
+        let logoutButton = app.buttons["logoutButton"]
+        XCTAssertTrue(logoutButton.waitForExistence(timeout: 3), "Кнопка выхода не найдена")
+        logoutButton.tap()
+        
+        let logoutAlert = app.alerts["Пока, пока!"]
+        XCTAssertTrue(logoutAlert.waitForExistence(timeout: 5), "Алерт подтверждения выхода не появился")
+        
+        let yesButton = logoutAlert.buttons["Да"]
+        XCTAssertTrue(yesButton.exists, "Кнопка 'Да'не найдена")
+        yesButton.tap()
+        
+        let authButton = app.buttons["Authenticate"]
+        XCTAssertTrue(authButton.waitForExistence(timeout: 5), "Экран авторизации не появился")
     }
 }

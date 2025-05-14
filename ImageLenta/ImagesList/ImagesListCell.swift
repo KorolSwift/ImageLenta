@@ -50,7 +50,6 @@ final class ImagesListCell: UITableViewCell {
         ])
         
         cellImage.kf.indicatorType = .activity
-        
         cellImage.kf.setImage(with: URL(string: model.imageURL)) { [weak self] result in
             switch result {
             case .success:
@@ -62,15 +61,17 @@ final class ImagesListCell: UITableViewCell {
         }
         
         if let dateValue = model.date {
-                let dateFormatter = DateFormatter()
-                dateFormatter.dateStyle = .medium
-                dateFormatter.timeStyle = .none
-                date.text = dateFormatter.string(from: dateValue)
-            } else {
-                date.text = ""
-            }
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .medium
+            dateFormatter.timeStyle = .none
+            date.text = dateFormatter.string(from: dateValue)
+        } else {
+            date.text = ""
+        }
         
         setIsLiked(model.isLiked)
+        likeButton.isAccessibilityElement = true
+        likeButton.accessibilityIdentifier = "likeButton"
     }
     
     override func prepareForReuse() {
