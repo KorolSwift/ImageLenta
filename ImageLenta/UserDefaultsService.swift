@@ -11,7 +11,6 @@ import Foundation
 final class UserDefaultsService {
     static let shared = UserDefaultsService()
     private let defaults = UserDefaults.standard
-    
     private init() {}
     
     private enum Key {

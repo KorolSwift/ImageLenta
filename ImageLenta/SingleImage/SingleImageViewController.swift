@@ -12,6 +12,7 @@ final class SingleImageViewController: UIViewController {
     
     @IBOutlet private var imageView: UIImageView!
     @IBOutlet weak var scrollView: UIScrollView!
+    @IBOutlet weak var backButton: UIButton!
     var imageURL: URL?
     
     override func viewDidLoad() {
@@ -20,6 +21,8 @@ final class SingleImageViewController: UIViewController {
         scrollView.minimumZoomScale = 0.1
         scrollView.maximumZoomScale = 1.25
         scrollView.delegate = self
+        imageView.accessibilityIdentifier = "FullSizeImage"
+        backButton.accessibilityIdentifier = "nav back button white"
         loadFullImage()
     }
     
@@ -52,7 +55,7 @@ final class SingleImageViewController: UIViewController {
             }
         }
     }
-
+    
     private func showError() {
         let alert = UIAlertController(
             title: "Что-то пошло не так",
@@ -64,7 +67,6 @@ final class SingleImageViewController: UIViewController {
             self.loadFullImage()
         })
         present(alert, animated: true)
-        
     }
     
     private func rescaleAndCenterImageInScrollView(image: UIImage) {

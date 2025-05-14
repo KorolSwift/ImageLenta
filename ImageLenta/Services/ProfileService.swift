@@ -8,12 +8,12 @@
 import Foundation
 
 
-final class ProfileService {
+final class ProfileService: ProfileServiceProtocol {
     
     private let urlSession = URLSession.shared
     static let shared = ProfileService()
     private init() {}
-    private(set) var profile: Profile?
+    var profile: Profile?
     
     struct ProfileResult: Codable {
         let username: String
@@ -54,6 +54,7 @@ final class ProfileService {
                     )
                     guard let self = self else { return }
                     self.profile = profile
+                    
                     completion(.success(profile))
                     
                 case .failure(let error):

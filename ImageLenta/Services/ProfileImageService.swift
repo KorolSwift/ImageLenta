@@ -8,7 +8,7 @@
 import Foundation
 
 
-final class ProfileImageService {
+final class ProfileImageService: ProfileImageServiceProtocol {
     private let urlSession = URLSession.shared
     private init() {}
     static let shared = ProfileImageService()
@@ -17,7 +17,6 @@ final class ProfileImageService {
     
     struct UserResult: Codable {
         let profileImage: ProfileImage
-        
         
         enum CodingKeys: String, CodingKey {
             case profileImage = "profile_image"
@@ -56,7 +55,6 @@ final class ProfileImageService {
                             object: self,
                             userInfo: ["URL": avatarURL]
                         )
-                    
                 case .failure(let error):
                     print("[ProfileImageService:fetchProfileImage]: Ошибка - \(error.localizedDescription), username: \(username)")
                     completion(.failure(error))
@@ -70,5 +68,3 @@ final class ProfileImageService {
         avatarURL = nil
     }
 }
-
-
